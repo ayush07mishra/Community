@@ -3,11 +3,11 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs").promises;
 const mongoose = require("mongoose");
-
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+console.log("Trying to connect with URI:", process.env.MONGODB_URI);
 
 // Middleware
 app.use(cors());
@@ -20,8 +20,13 @@ app.use(express.static("public"));
 //   useUnifiedTopology: true,
 // });
 
-mongoose.connect(process.env.MONGODB_URI);
-
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connected!"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 db.once("open", () => {
